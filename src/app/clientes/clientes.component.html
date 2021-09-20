@@ -1,0 +1,55 @@
+<div class="card border-primary my-3">
+  <div class="card-header">Clientes</div>
+  <div class="card-body text-primary">
+    <h5 class="card-title">Listado de Clientes</h5>
+    <div class="my-2 text-left">
+      <button *ngIf="authService.hasRole('ROLE_ADMIN')" class="btn btn-rounded btn-primary" type="button"
+        [routerLink]="['/clientes/form']">Crear Cliente</button>
+    </div>
+    <div class="alert alert-info" *ngIf="clientes?.length == 0">
+      No hay regitros
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-striped" *ngIf="clientes?.length > 0">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">nombre</th>
+            <th scope="col">apellido</th>
+            <th scope="col">email</th>
+            <th scope="col">fecha</th>
+            <th *ngIf="authService.hasRole('ROLE_ADMIN')" scope="col">crear factura</th>
+            <th *ngIf="authService.hasRole('ROLE_ADMIN')" scope="col">editar</th>
+            <th *ngIf="authService.hasRole('ROLE_ADMIN')" scope="col">eliminar</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cliente of clientes">
+            <th scope="row"><button type="button" (click)="abrirModal(cliente)" class="btn btn-success btn-sm"
+                data-bs-toggle="modal" data-bs-target="#modalDetalleCliente">{{ cliente.id }}</button></th>
+            <td>{{ cliente.nombre }}</td>
+            <td>{{ cliente.apellido }}</td>
+            <td>{{ cliente.email }}</td>
+            <td>{{ cliente.createAt }}</td>
+            <td *ngIf="authService?.hasRole('ROLE_ADMIN')">
+              <button type="button" [routerLink]="['/facturas/form', cliente.id]"
+              class="btn btn-success btn-sm">crear factura</button>
+            </td>
+            <td *ngIf="authService.hasRole('ROLE_ADMIN')">
+              <button type="button" name="editar" [routerLink]="['/clientes/form', cliente.id]"
+                class="btn btn-primary btn-sm">editar</button>
+            </td>
+            <td *ngIf="authService.hasRole('ROLE_ADMIN')">
+              <button type="button" name="eliminar" (click)="delete(cliente)"
+                class="btn btn-danger btn-sm">eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <app-paginator *ngIf="paginador" [paginador]="paginador"></app-paginator>
+  </div>
+</div>
+
+<detalle-cliente [cliente]="clienteSeleccionado"></detalle-cliente>

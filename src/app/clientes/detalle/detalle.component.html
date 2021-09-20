@@ -1,0 +1,92 @@
+<!-- Modal -->
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="modalDetalleCliente" tabindex="-1"
+    aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">{{ titulo }}</h5>
+                <button id="btn_close_modal" type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container" *ngIf="cliente != null">
+                    <div class="row">
+                        <div class="col-sm">
+                            <ul class="list-group">
+                                <li class="list-group-item">{{ cliente.nombre}}</li>
+                                <li class="list-group-item">{{ cliente.apellido}}</li>
+                                <li class="list-group-item">{{ cliente.email}}</li>
+                                <li class="list-group-item">{{ cliente.createAt | date: "fullDate"}}</li>
+                                <li class="list-group-item">{{ cliente.region?.nombre}}</li>
+                            </ul>
+                            <div class="form-group mb-3">
+                                <label for="formFile" class="form-label">Default file input example</label>
+                                <div class="row">
+                                    <input (change)="seleccionarFoto($event)" class="form-control" type="file"
+                                        id="formFile">
+                                    <button (click)="subirFoto()" [disabled]="!fotoSeleccionanda"
+                                        class="btn btn-secondary mt-2">Upload</button>
+                                </div>
+                            </div>
+
+                            <div *ngIf="progreso > 0" class="progress">
+                                <div class="progress-bar progress-bar-striped" role="progressbar"
+                                    [ngStyle]="{width: progreso + '%'}" attr.aria-valuenow="{{progreso}}"
+                                    aria-valuemin="0" aria-valuemax="100">{{progreso}}%</div>
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <img *ngIf="cliente?.foto"
+                                src="{{urlBackend}}/api/clientes/uploads/img/{{ cliente.foto }}"
+                                alt="{{ cliente.foto }}" class="img-thumbnail rounded">
+                        </div>
+                    </div>
+
+                    <div class="row" *ngIf="authService?.hasRole('ROLE_ADMIN')">
+                        <button type="button" [routerLink]="['/facturas/form', cliente.id]"
+                            class="btn btn-success btn-sm" (click)="cerrarModal()">crear factura</button>
+                    </div>
+
+                    <div class="row">
+                        <div class="alert alert-info my-4" *ngIf="cliente.facturas.length == 0">
+                            No hay facturas asignadas
+                        </div>
+                        <div class="table-responsive" *ngIf="cliente.facturas.length > 0">
+                            <table class="table table-bordered table-striped my-4">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Descripción</th>
+                                        <th scope="col">Fecha</th>
+                                        <th scope="col">Total</th>
+                                        <th *ngIf="authService?.hasRole('ROLE_USER')" scope="col">Detalle</th>
+                                        <th *ngIf="authService?.hasRole('ROLE_ADMIN')" scope="col">Eliminar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let factura of cliente.facturas">
+                                        <td>{{ factura.id }}</td>
+                                        <td>{{ factura.descripcion }}</td>
+                                        <td>{{ factura.createAt }}</td>
+                                        <td>{{ factura.total }}</td>
+                                        <td *ngIf="authService?.hasRole('ROLE_USER')"><button class="btn btn-primary btn-sm" type="button"
+                                                [routerLink]="['/facturas', factura.id]"
+                                                (click)="cerrarModal()">ver</button></td>
+                                        <td *ngIf="authService?.hasRole('ROLE_ADMIN')">
+                                            <button class="btn btn-danger btn-sm" type="button"
+                                                (click)="delete(factura)">eliminar</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button (click)="cerrarModal()" type="button" class="btn btn-secondary"
+                    data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

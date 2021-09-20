@@ -1,0 +1,1 @@
+export const URL_BACKEND = 'https://jk-spring-boot-apirest.herokuapp.com';
